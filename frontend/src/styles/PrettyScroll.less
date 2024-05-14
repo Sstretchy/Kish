@@ -1,0 +1,23 @@
+.PrettyScroll {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: darkgray transparent; /* Firefox */
+}
+
+/* Chrome, Edge, и Safari */
+.PrettyScroll::-webkit-scrollbar {
+  width: 5px; /* Ширина скроллбара */
+  height: 8px; /* Высота скроллбара для горизонтального скролла */
+}
+
+.PrettyScroll::-webkit-scrollbar-track {
+  background: transparent; /* Цвет дорожки скроллбара */
+}
+
+.PrettyScroll::-webkit-scrollbar-thumb {
+  background-color: rgb(199, 199, 199); /* Цвет самого скроллбара */
+  border-radius: 4px;
+}
+
+.PrettyScroll::-webkit-scrollbar-thumb:hover {
+  background-color: #adadad; /* Цвет скроллбара при наведении */
+}
