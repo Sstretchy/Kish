@@ -10,16 +10,7 @@ declare module '*.webm';
 declare module '*.ogg';
 declare module '*.html';
 declare module '*.woff';
-
-declare module "*.module.css" {
-  const classes: { [key: string]: string };
-  export default classes;
-}
-
-declare module '*.less' {
-  const classes: { [key: string]: string };
-  export default classes;
-}
+declare module '*.less';
 // declare module '*.module.css' {
 //   const classes: { [key: string]: string };
 //   export default classes;

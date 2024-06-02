@@ -1,9 +1,7 @@
 :root {
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  /* color: rgba(255, 255, 255, 0.87); */
+  color: rgba(255, 255, 255, 0.87);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -11,12 +9,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 
-  h1,h2,h3,h4,h5,h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h5 {
     font-family: 'Alice', serif;
     margin: 0;
   }

@@ -8,8 +8,20 @@
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "components/*": ["../src/components/*"],
+      "assets/*": ["../src/assets/*"],
+      "styles/*": ["../src/styles/*"]
+    },
+    "rootDir": "../src"
   },
-  "ts-node": { "compilerOptions": { "module": "CommonJS" } },
-  "typeRoots": ["./types/global.d.ts"]
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "typeRoots": ["src/types/global.d.ts"],
+  "include": ["../src"]
 }

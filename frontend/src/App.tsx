@@ -1,19 +1,25 @@
-import React, { useEffect } from 'react'
-import ChatComponent from './components/ChatComponent'
-import styles from './app.module.css';
-
-console.log(styles)
+import React from 'react';
+import * as styles from './App.less';
+import { ChatComponent } from 'components/chat-component/ChatComponent';
+import { Map } from 'components/map/Map';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const App = () => {
 
-  useEffect(() => console.log(styles), [])
+  const { isLoading, error } = useAuth0();
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Oops... {error.message}</div>;
+  }
   return (
-    <div
-     className={styles.app}
-     >
-      <div >
+      <div className={styles.App}>
+        <div className={styles.App__mainContent} />
+        <Map />
+        <ChatComponent />
       </div>
-      <ChatComponent />
-    </div>)
-}
+  );
+};
