@@ -13,7 +13,7 @@ export const sendRequest = async <T>({
 }: RequestOptions): Promise<T> => {
   try {
     const response = await axios({
-      url,
+      url: `${process.env.API_URL}/api${url}`,
       method,
       data,
     });

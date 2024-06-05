@@ -4,12 +4,16 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import webpack from 'webpack';
+import Dotenv from 'dotenv-webpack';
+import 'webpack-dev-server';
 
 type EnvVars = {
   mode: 'production' | 'development';
 };
 
 module.exports = (env: EnvVars) => {
+  const isProduction = env.mode === 'production';
+
   const config: webpack.Configuration = {
     mode: env.mode ?? 'development',
     entry: path.resolve(__dirname, 'src', 'main.tsx'),
@@ -23,7 +27,23 @@ module.exports = (env: EnvVars) => {
       new HtmlWebpackPlugin({
         template: path.resolve(__dirname, 'index.html'),
       }),
+      new Dotenv({
+        path: isProduction ? './.env.production' : './.env',
+      }),
+      new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(env.mode),
+        'process.env.REACT_APP_API_URL': JSON.stringify(
+          isProduction ? 'https://your-production-api-url.com' : 'http://localhost:3001'
+        ),
+      }),
     ],
+    devServer: {
+      static: {
+        directory: path.join(__dirname, 'dist'),
+      },
+      compress: true,
+      port: 8080,
+    },
     module: {
       rules: [
         {

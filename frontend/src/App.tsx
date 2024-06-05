@@ -6,9 +6,9 @@ import { LoginView } from 'components/login-view/LoginView';
 import { io } from 'socket.io-client';
 import { getInitialsIds, setInitialsIds } from 'utils/localStorage';
 import { useAuth0 } from '@auth0/auth0-react';
-import axios from 'axios';
+import { TUserResponse, getUser } from 'api/users';
 
-const socket = io('http://localhost:3001');
+const socket = io(process.env.API_URL);
 
 export const App = () => {
   const [readyToPlay, setReadyToPlay] = useState(false);
@@ -19,27 +19,25 @@ export const App = () => {
   const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Регистрация пользователя при аутентификации
-      axios
-        .post('http://localhost:3001/api/users/register', {
+    (async () => {
+      if (isAuthenticated && user) {
+        // Регистрация пользователя при аутентификации
+        const { userId, nickName }: TUserResponse = await getUser({
           email: user.email,
           name: user.name,
           auth0Id: user.sub,
-        })
-        .then((response) => {
-          if (response.data.success) {
-            setCurrentUserId(response.data.userId);
-            setNickName(response.data.nickName);
-          }
         });
-    }
+
+        setCurrentUserId(userId);
+        setNickName(nickName);
+      }
+    })();
   }, [isAuthenticated, user]);
 
   useEffect(() => {
     const { savedRoomId } = getInitialsIds();
 
-    if (savedRoomId && isAuthenticated ) {
+    if (savedRoomId && isAuthenticated) {
       setCurrentRoomId(savedRoomId);
       setReadyToPlay(true);
     }
@@ -50,8 +48,6 @@ export const App = () => {
       setInitialsIds(currentRoomId);
     }
   }, [readyToPlay]);
-
-  console.log(currentRoomId)
 
   if (!readyToPlay) {
     return (

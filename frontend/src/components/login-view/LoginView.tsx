@@ -4,8 +4,8 @@ import Logo from '../../assets/logo_game_medieval_punk.png';
 import { Button, Snackbar, TextField, Typography } from '@mui/material';
 import ContentCopyOutlinedIcon from '@mui/icons-material/ContentCopyOutlined';
 import { useAuth0 } from '@auth0/auth0-react';
-import axios from 'axios';
 import { ILoginViewProps } from './ILoginViewProps';
+import { createRoom } from 'api/rooms';
 
 export const LoginView = ({
   socket,
@@ -25,15 +25,7 @@ export const LoginView = ({
     setReadyToPlay(true);
   };
 
-  const createRoom = () => {
-    axios
-      .post('http://localhost:3001/api/rooms/create', { userId: currentUserId })
-      .then((response) => {
-        if (response.data.success) {
-          joinRoom(response.data.roomId);
-        }
-      });
-  };
+  const onCreateRoom = async () => joinRoom(await createRoom(currentUserId));
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -81,7 +73,7 @@ export const LoginView = ({
                 variant="contained"
                 fullWidth
                 size="large"
-                onClick={createRoom}>
+                onClick={onCreateRoom}>
                 Создать комнату
               </Button>
             )}

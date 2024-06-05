@@ -1,5 +1,4 @@
 import React, { useState, useEffect, FormEvent } from 'react';
-import axios from 'axios';
 import * as styles from './ChatComponent.less';
 import * as scrollStyle from 'styles/PrettyScroll.less';
 import {
@@ -21,6 +20,7 @@ import { IChatComponentProps } from './IChatComponentProps';
 import { ChatMessage } from 'types/TChatMessage';
 import { removeInitialsIds } from 'utils/localStorage';
 import { TMessagesResponse, getMessages } from 'api/messages';
+import { udpateNickName } from 'api/users';
 
 export const ChatComponent = ({
   socket,
@@ -37,7 +37,7 @@ export const ChatComponent = ({
   const [name, setName] = useState('');
 
   useEffect(() => {
-    const fetch = async () => {
+    (async () => {
       if (currentRoomId) {
         socket.emit('join room', {
           roomId: currentRoomId,
@@ -53,30 +53,24 @@ export const ChatComponent = ({
           await getMessages(currentRoomId);
 
         setMessages(messages);
-
-        return () => {
-          socket.off('chat message');
-        };
       }
-    };
+    })();
 
-    fetch();
+    return () => {
+      socket.off('chat message');
+    };
   }, [currentRoomId]);
 
-  const sendNickName = (event: FormEvent) => {
+  const sendNickName = async (event: FormEvent) => {
     event.preventDefault();
-    axios
-      .put('http://localhost:3001/api/users/nickname', {
-        userId: currentUserId,
-        nickName: name,
-      })
-      .then((response) => {
-        if (response.data.success) {
-          setNickName(response.data.nickName);
-          setName('');
-          localStorage.setItem('nickName', response.data.nickName);
-        }
-      });
+    const nickName = await udpateNickName({
+      userId: currentUserId,
+      nickName: name,
+    });
+
+    setNickName(nickName);
+    setName('');
+    localStorage.setItem('nickName', nickName);
   };
 
   const sendMessage = (event: FormEvent) => {
