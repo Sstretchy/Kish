@@ -4,8 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "start": "cross-env NODE_ENV=development webpack serve -c webpack.config.ts",
-    "build:dev": "webpack --env mode=development",
-    "build:prod": "webpack --env mode=production",
+    "build": "webpack --config webpack.config.ts --mode production",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,md}\""
@@ -23,9 +22,11 @@
     "typescript-plugin-css-modules": "^5.1.0"
   },
   "devDependencies": {
+    "@types/dotenv-webpack": "^7.0.7",
     "@types/node": "^20.12.11",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/socket.io": "^3.0.2",
     "@types/socket.io-client": "^3.0.0",
     "@types/webpack": "^5.28.5",
     "@types/webpack-dev-server": "^4.7.2",
@@ -33,6 +34,7 @@
     "@typescript-eslint/parser": "^6.14.0",
     "classnames": "^2.5.1",
     "css-loader": "7.1.1",
+    "dotenv-webpack": "^8.1.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.1.3",

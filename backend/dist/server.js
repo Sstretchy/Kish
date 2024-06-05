@@ -15,13 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const model_1 = require("./src/sockets/models/model");
+const http_1 = require("http");
+const socketService_1 = require("./src/services/socketService");
+const userRoutes_1 = __importDefault(require("./src/routes/userRoutes"));
+const messageRoutes_1 = __importDefault(require("./src/routes/messageRoutes"));
+const roomRoutes_1 = __importDefault(require("./src/routes/roomRoutes"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 app.use(express_1.default.json());
 app.use((0, cors_1.default)({
-    origin: 'http://localhost:8080', // Укажите домен вашего клиента
-    methods: ['GET', 'POST']
+    origin: 'http://localhost:8080',
+    methods: ['GET', 'POST', 'PUT']
 }));
 const connectWithRetry = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -38,59 +42,14 @@ const connectWithRetry = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 connectWithRetry();
-// API для регистрации пользователей
-app.post('/api/register', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, name, auth0Id, nickname } = req.body;
-    try {
-        let user = yield model_1.User.findOne({ auth0Id });
-        if (!user) {
-            user = new model_1.User({
-                email,
-                name,
-                auth0Id,
-                nickname
-            });
-            yield user.save();
-        }
-        res.status(200).json({ success: true, userId: user._id });
-    }
-    catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-}));
-// API для отправки сообщений
-app.post('/api/messages', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId, message } = req.body;
-    try {
-        const user = yield model_1.User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
-        const newMessage = new model_1.Message({
-            username: user.nickname,
-            message,
-            userId
-        });
-        yield newMessage.save();
-        res.status(200).json({ success: true, message: newMessage });
-    }
-    catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-}));
-// API для получения всех сообщений
-app.get('/api/messages', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const messages = yield model_1.Message.find();
-        res.status(200).json({ success: true, messages });
-    }
-    catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
-}));
+const server = (0, http_1.createServer)(app);
+(0, socketService_1.initSocket)(server);
+app.use('/api/users', userRoutes_1.default);
+app.use('/api/messages', messageRoutes_1.default);
+app.use('/api/rooms', roomRoutes_1.default);
 app.get('/', (req, res) => {
     res.send('Привет, мир!');
 });
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Сервер запущен на порте ${PORT}`);
 });

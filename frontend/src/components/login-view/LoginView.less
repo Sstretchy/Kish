@@ -1,0 +1,56 @@
+.LoginView {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  background-color: #fff8e6;
+
+  img {
+    display: block;
+    height: 95%;
+  }
+
+  &__buttons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 35px;
+  }
+
+  &__codeContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  &__container {
+    margin: 0 7%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    gap: 50px;
+
+    h1 {
+      color: black;
+      font-size: 80px;
+    }
+
+    button {
+      min-width: 100px;
+      max-width: 600px;
+      line-height: 35px;
+    }
+  }
+
+  &__input {
+    min-width: 100px;
+    max-width: 600px;
+    > div {
+      background-color: #00000029;
+      color: black;
+    }
+  }
+}

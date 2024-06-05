@@ -13,7 +13,9 @@
     "paths": {
       "components/*": ["../src/components/*"],
       "assets/*": ["../src/assets/*"],
-      "styles/*": ["../src/styles/*"]
+      "styles/*": ["../src/styles/*"],
+      "utils/*": ["../src/utils/*"],
+      "api/*": ["../src/api/*"]
     },
     "rootDir": "../src"
   },

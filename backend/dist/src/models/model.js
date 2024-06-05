@@ -1,5 +1,4 @@
 "use strict";
-// Подключаем mongoose для работы с MongoDB
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -24,18 +23,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Room = exports.User = void 0;
+exports.Message = exports.Room = exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const UserSchema = new mongoose_1.Schema({
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    auth0Id: { type: String, required: true, unique: true }
+    auth0Id: { type: String, required: true, unique: true },
+    nickname: { type: String, required: false }
 });
-// Определяем схему комнаты
-const roomSchema = new mongoose_1.default.Schema({
-    roomId: { type: String, required: true, unique: true }, // Уникальный ID комнаты
-    players: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' }] // Массив ссылок на пользователей
+const RoomSchema = new mongoose_1.Schema({
+    roomId: { type: String, required: true, unique: true },
+    players: [{ type: mongoose_1.default.Types.ObjectId, ref: 'User' }]
 });
-// Создаем модели на основе схем
+const MessageSchema = new mongoose_1.Schema({
+    username: { type: String, required: true },
+    message: { type: String, required: true },
+    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User', required: true },
+    roomId: { type: String, required: true }
+});
 exports.User = mongoose_1.default.model('User', UserSchema);
-exports.Room = mongoose_1.default.model('Room', roomSchema);
+exports.Room = mongoose_1.default.model('Room', RoomSchema);
+exports.Message = mongoose_1.default.model('Message', MessageSchema);

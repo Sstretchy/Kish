@@ -3,74 +3,95 @@ import axios from 'axios';
 import * as styles from './ChatComponent.less';
 import * as scrollStyle from 'styles/PrettyScroll.less';
 import {
+  Button,
   FilledInput,
   IconButton,
   InputAdornment,
   Paper,
+  Snackbar,
   Typography,
 } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import classNames from 'classnames';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth0 } from '@auth0/auth0-react';
+import { IChatComponentProps } from './IChatComponentProps';
+import { ChatMessage } from 'types/TChatMessage';
+import { removeInitialsIds } from 'utils/localStorage';
+import { TMessagesResponse, getMessages } from 'api/messages';
 
-type ChatMessage = {
-  username: string;
-  message: string;
-  userId: string;
-};
-
-export const ChatComponent = () => {
-  const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0();
+export const ChatComponent = ({
+  socket,
+  currentUserId,
+  currentRoomId,
+  nickName,
+  setNickName,
+}: IChatComponentProps) => {
+  const [snakbarOpened, setSnakbarOpened] = useState(false);
+  const { logout, isAuthenticated } = useAuth0();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState('');
-  const [name, setName] = useState('');
-  const [placeholderName, setPlaceholderName] = useState('');
-  const [currentUserId, setCurrentUserId] = useState('');
   const [isChatExpanded, setIsChatExpanded] = useState(true);
+  const [name, setName] = useState('');
 
   useEffect(() => {
-    if (isAuthenticated && user) {
-      // Регистрация пользователя при аутентификации
-      axios.post('http://localhost:3001/api/register', { email: user.email, name: user.name, auth0Id: user.sub })
-        .then(response => {
-          if (response.data.success) {
-            setCurrentUserId(response.data.userId);
-            setName(user.name);
-            setPlaceholderName(user.name);
-          }
+    const fetch = async () => {
+      if (currentRoomId) {
+        socket.emit('join room', {
+          roomId: currentRoomId,
+          userId: currentUserId,
         });
-    }
 
-    // Получение всех сообщений при загрузке компонента
-    axios.get('http://localhost:3001/api/messages')
-      .then(response => {
-        if (response.data.success) {
-          setMessages(response.data.messages);
-        }
-      });
+        socket.on('chat message', (msg: ChatMessage) => {
+          console.log('Received message:', msg);
+          setMessages((prevMessages) => [...prevMessages, msg]);
+        });
 
-  }, [isAuthenticated, user]);
+        const { messages }: TMessagesResponse =
+          await getMessages(currentRoomId);
 
-  const sendMessage = (event: FormEvent) => {
+        setMessages(messages);
+
+        return () => {
+          socket.off('chat message');
+        };
+      }
+    };
+
+    fetch();
+  }, [currentRoomId]);
+
+  const sendNickName = (event: FormEvent) => {
     event.preventDefault();
-    if (!message) return;
-    axios.post('http://localhost:3001/api/messages', { userId: currentUserId, message })
-      .then(response => {
+    axios
+      .put('http://localhost:3001/api/users/nickname', {
+        userId: currentUserId,
+        nickName: name,
+      })
+      .then((response) => {
         if (response.data.success) {
-          setMessages(prevMessages => [...prevMessages, response.data.message]);
-          setMessage('');
+          setNickName(response.data.nickName);
+          setName('');
+          localStorage.setItem('nickName', response.data.nickName);
         }
       });
   };
 
-  const handleLogin = () => {
-    loginWithRedirect();
+  const sendMessage = (event: FormEvent) => {
+    event.preventDefault();
+    socket.emit('chat message', {
+      roomId: currentRoomId,
+      userId: currentUserId,
+      message,
+    });
+    setMessage('');
   };
 
   const handleLogout = () => {
     logout({ logoutParams: { returnTo: window.location.origin } });
+    removeInitialsIds();
   };
 
   return (
@@ -79,6 +100,12 @@ export const ChatComponent = () => {
         className={classNames(styles.OpenChatIcon, {
           [styles.OpenChatIcon_hide]: isChatExpanded,
         })}>
+        <IconButton
+          size="large"
+          color="primary"
+          onClick={handleLogout}>
+          <LogoutIcon fontSize="large" />
+        </IconButton>
         <IconButton
           size="large"
           color="primary"
@@ -92,20 +119,51 @@ export const ChatComponent = () => {
         })}>
         <div className={styles.ChatComponent__nameContainer}>
           <div className={styles.ChatComponent__closeChatIcon}>
-            <h2>Представьтесь:</h2>
+            <Snackbar
+              message="Скопировано в буфер обмена"
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+              autoHideDuration={2000}
+              onClose={() => setSnakbarOpened(false)}
+              open={snakbarOpened}
+            />
+            <Button
+              variant="contained"
+              // fullWidth
+              size="small"
+              onClick={() => {
+                setSnakbarOpened(true);
+                navigator.clipboard.writeText(currentRoomId);
+              }}>
+              #{currentRoomId}
+            </Button>
             <IconButton
               size="small"
               onClick={() => setIsChatExpanded(!isChatExpanded)}>
               <CloseIcon />
             </IconButton>
           </div>
-          {!isAuthenticated && (
-            <button onClick={handleLogin}>Log In</button>
-          )}
           {isAuthenticated && (
             <div>
-              <button onClick={handleLogout}>Log Out</button>
-              <Typography>Здравствуйте, {placeholderName}</Typography>
+              <Typography>Здравствуйте, {nickName}</Typography>
+              <form onSubmit={sendNickName}>
+                <FilledInput
+                  fullWidth
+                  placeholder="Сменить никнейм"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  size="small"
+                  color="secondary"
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        size="small"
+                        onClick={sendNickName}>
+                        <ChevronRightIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </form>
             </div>
           )}
         </div>
@@ -130,10 +188,9 @@ export const ChatComponent = () => {
 
         <form onSubmit={sendMessage}>
           <FilledInput
+            fullWidth
             value={message}
-            onChange={(e: {
-              target: { value: React.SetStateAction<string> };
-            }) => setMessage(e.target.value)}
+            onChange={(e) => setMessage(e.target.value)}
             size="small"
             endAdornment={
               <InputAdornment position="end">
