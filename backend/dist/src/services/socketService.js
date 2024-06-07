@@ -14,8 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initSocket = void 0;
 const socket_io_1 = require("socket.io");
-const model_1 = require("../models/model");
 const mongoose_1 = __importDefault(require("mongoose"));
+const message_1 = require("../models/message");
+const user_1 = require("../models/user");
+const room_1 = require("../models/room");
+const gameSession_1 = require("../models/gameSession");
 const initSocket = (server) => {
     const io = new socket_io_1.Server(server, {
         cors: {
@@ -31,7 +34,7 @@ const initSocket = (server) => {
         // Присоединение к комнате
         socket.on('join room', ({ roomId, userId }) => __awaiter(void 0, void 0, void 0, function* () {
             socket.join(roomId);
-            const room = yield model_1.Room.findById(roomId);
+            const room = yield room_1.Room.findById(roomId);
             const userObjectId = new mongoose_1.default.Types.ObjectId(userId);
             if (room &&
                 !room.players.some((player) => player.equals(userObjectId)) &&
@@ -40,20 +43,37 @@ const initSocket = (server) => {
                 yield room.save();
                 socket.to(roomId).emit('user joined', { userId });
             }
+            // Load existing tokens and send to the user
+            const gameSession = yield gameSession_1.GameSession.findOne({ roomId: new mongoose_1.default.Types.ObjectId(roomId) });
+            if (gameSession) {
+                socket.emit('load tokens', gameSession.tokens);
+            }
         }));
         // Обработка сообщений в комнате
         socket.on('chat message', ({ roomId, userId, message }) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield model_1.User.findById(userId);
+            const user = yield user_1.User.findById(userId);
             if (user) {
-                const newMessage = new model_1.Message({
+                const newMessage = new message_1.Message({
                     username: user.nickname,
                     message,
                     userId: new mongoose_1.default.Types.ObjectId(userId),
-                    roomId,
+                    roomId: new mongoose_1.default.Types.ObjectId(roomId),
                 });
                 yield newMessage.save();
                 console.log('Sending message to room:', roomId, newMessage);
                 io.to(roomId).emit('chat message', newMessage);
+            }
+        }));
+        // Обработка токенов
+        socket.on('place token', ({ roomId, token }) => __awaiter(void 0, void 0, void 0, function* () {
+            const gameSession = yield gameSession_1.GameSession.findOne({ roomId: new mongoose_1.default.Types.ObjectId(roomId) });
+            const tokenObjectId = new mongoose_1.default.Types.ObjectId(token.userId);
+            if (gameSession) {
+                const updatedTokens = [...gameSession.tokens.filter(t => !t.userId.equals(tokenObjectId)), Object.assign(Object.assign({}, token), { userId: tokenObjectId })];
+                gameSession.tokens = updatedTokens;
+                io.to(roomId).emit('update tokens', updatedTokens);
+                yield gameSession.save();
+                socket.emit('load tokens', gameSession.tokens);
             }
         }));
     });

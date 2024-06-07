@@ -12,8 +12,8 @@ const socket = io(process.env.API_URL);
 
 export const App = () => {
   const [readyToPlay, setReadyToPlay] = useState(false);
-  const [currentRoomId, setCurrentRoomId] = useState(null);
-  const [currentUserId, setCurrentUserId] = useState(null);
+  const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [nickName, setNickName] = useState('');
 
   const { isAuthenticated, user } = useAuth0();
@@ -21,7 +21,6 @@ export const App = () => {
   useEffect(() => {
     (async () => {
       if (isAuthenticated && user) {
-        // Регистрация пользователя при аутентификации
         const { userId, nickName }: TUserResponse = await getUser({
           email: user.email,
           name: user.name,
@@ -64,7 +63,12 @@ export const App = () => {
   return (
     <div className={styles.App}>
       <div className={styles.App__mainContent} />
-      <Map />
+      <Map
+        currentUserId={currentUserId!}
+        nickName={nickName}
+        socket={socket}
+        currentRoomId={currentRoomId}
+      />
       <ChatComponent
         socket={socket}
         currentRoomId={currentRoomId}

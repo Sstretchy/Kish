@@ -1,10 +1,15 @@
 import { Server as SocketIOServer, Socket } from 'socket.io';
-import { IMessage, Message, Room, User } from '../models/model';
 import mongoose from 'mongoose';
+import { IMessage, Message } from '../models/message';
+import { User } from '../models/user';
+import { Room } from '../models/room';
+import { GameSession, IGameSession } from '../models/gameSession';
 
 interface ServerToClientEvents {
   'chat message': (msg: IMessage) => void;
   'user joined': (data: { userId: string }) => void;
+  'load tokens': (tokens: IGameSession['tokens']) => void;
+  'update tokens': (tokens: IGameSession['tokens']) => void;
 }
 
 interface ClientToServerEvents {
@@ -13,6 +18,10 @@ interface ClientToServerEvents {
     roomId: string;
     userId: string;
     message: string;
+  }) => void;
+  'place token': (data: {
+    roomId: string;
+    token: { x: number; y: number; userId: string; color: string; nickName: string; location: string };
   }) => void;
 }
 
@@ -50,6 +59,12 @@ export const initSocket = (server: any) => {
           await room.save();
           socket.to(roomId).emit('user joined', { userId });
         }
+
+        // Load existing tokens and send to the user
+        const gameSession = await GameSession.findOne({ roomId: new mongoose.Types.ObjectId(roomId) });
+        if (gameSession) {
+          socket.emit('load tokens', gameSession.tokens);
+        }
       });
 
       // Обработка сообщений в комнате
@@ -60,11 +75,24 @@ export const initSocket = (server: any) => {
             username: user.nickname,
             message,
             userId: new mongoose.Types.ObjectId(userId),
-            roomId,
+            roomId: new mongoose.Types.ObjectId(roomId),
           });
           await newMessage.save();
           console.log('Sending message to room:', roomId, newMessage);
           io.to(roomId).emit('chat message', newMessage);
+        }
+      });
+
+      // Обработка токенов
+      socket.on('place token', async ({ roomId, token }) => {
+        const gameSession = await GameSession.findOne({ roomId: new mongoose.Types.ObjectId(roomId) });
+        const tokenObjectId = new mongoose.Types.ObjectId(token.userId);
+        if (gameSession) {
+          const updatedTokens = [...gameSession.tokens.filter(t => !t.userId.equals(tokenObjectId)), { ...token, userId: tokenObjectId }];
+          gameSession.tokens = updatedTokens;
+          io.to(roomId).emit('update tokens', updatedTokens);
+          await gameSession.save();
+          socket.emit('load tokens', gameSession.tokens);
         }
       });
     }

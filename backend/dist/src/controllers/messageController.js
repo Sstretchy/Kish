@@ -10,11 +10,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMessage = exports.getMessages = void 0;
-const model_1 = require("../models/model");
+const message_1 = require("../models/message");
+const user_1 = require("../models/user");
 const getMessages = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { roomId } = req.params;
-        const messages = yield model_1.Message.find({ roomId });
+        const messages = yield message_1.Message.find({ roomId });
         res.status(200).json({ success: true, messages });
     }
     catch (error) {
@@ -25,11 +26,11 @@ exports.getMessages = getMessages;
 const createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, message, roomId } = req.body;
     try {
-        const user = yield model_1.User.findById(userId);
+        const user = yield user_1.User.findById(userId);
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
-        const newMessage = new model_1.Message({
+        const newMessage = new message_1.Message({
             username: user.nickname,
             message,
             userId,

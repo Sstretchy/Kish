@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateNickname = exports.registerUser = void 0;
-const model_1 = require("../models/model");
+const user_1 = require("../models/user");
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, name, auth0Id, nickname } = req.body;
     try {
-        let user = yield model_1.User.findOne({ auth0Id });
+        let user = yield user_1.User.findOne({ auth0Id });
         if (!user) {
-            user = new model_1.User({
+            user = new user_1.User({
                 email,
                 name,
                 auth0Id,
@@ -36,7 +36,7 @@ exports.registerUser = registerUser;
 const updateNickname = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, nickName } = req.body;
     try {
-        const user = yield model_1.User.findById(userId);
+        const user = yield user_1.User.findById(userId);
         if (!user) {
             return res
                 .status(404)

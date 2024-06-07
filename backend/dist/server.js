@@ -20,6 +20,7 @@ const socketService_1 = require("./src/services/socketService");
 const userRoutes_1 = __importDefault(require("./src/routes/userRoutes"));
 const messageRoutes_1 = __importDefault(require("./src/routes/messageRoutes"));
 const roomRoutes_1 = __importDefault(require("./src/routes/roomRoutes"));
+const gameSessionRoutes_1 = __importDefault(require("./src/routes/gameSessionRoutes"));
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 app.use(express_1.default.json());
@@ -47,6 +48,7 @@ const server = (0, http_1.createServer)(app);
 app.use('/api/users', userRoutes_1.default);
 app.use('/api/messages', messageRoutes_1.default);
 app.use('/api/rooms', roomRoutes_1.default);
+app.use('/api/game-sessions', gameSessionRoutes_1.default);
 app.get('/', (req, res) => {
     res.send('Привет, мир!');
 });

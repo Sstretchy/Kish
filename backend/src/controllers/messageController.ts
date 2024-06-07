@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { Message, User } from '../models/model';
+import { Message } from '../models/message';
+import { User } from '../models/user';
 
 export const getMessages = async (req: Request, res: Response) => {
   try {

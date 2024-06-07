@@ -13,12 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createRoom = void 0;
-const model_1 = require("../models/model");
 const mongoose_1 = __importDefault(require("mongoose"));
+const room_1 = require("../models/room");
 const createRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.body;
     try {
-        const newRoom = new model_1.Room({
+        const newRoom = new room_1.Room({
             roomId: new mongoose_1.default.Types.ObjectId().toString(),
             players: [new mongoose_1.default.Types.ObjectId(userId)]
         });

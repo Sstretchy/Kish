@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Room } from '../models/model';
 import mongoose from 'mongoose';
+import { Room } from '../models/room';
 
 export const createRoom = async (req: Request, res: Response) => {
   const { userId } = req.body;

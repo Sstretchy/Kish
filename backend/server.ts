@@ -6,6 +6,7 @@ import { initSocket } from './src/services/socketService';
 import userRoutes from './src/routes/userRoutes';
 import messageRoutes from './src/routes/messageRoutes';
 import roomRoutes from './src/routes/roomRoutes';
+import gameSessionRoutes from './src/routes/gameSessionRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,6 +39,7 @@ initSocket(server);
 app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/rooms', roomRoutes);
+app.use('/api/game-sessions', gameSessionRoutes); 
 
 
 app.get('/', (req, res) => {
