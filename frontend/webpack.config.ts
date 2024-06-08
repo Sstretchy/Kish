@@ -86,6 +86,7 @@ module.exports = (env: EnvVars) => {
         components: path.resolve(__dirname, 'src/components'),
         utils: path.resolve(__dirname, 'src/utils'),
         api: path.resolve(__dirname, 'src/api'),
+        const: path.resolve(__dirname, 'src/const'),
       },
     },
   };

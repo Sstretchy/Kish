@@ -31,7 +31,7 @@ const createMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(404).json({ success: false, message: 'User not found' });
         }
         const newMessage = new message_1.Message({
-            username: user.nickname,
+            nickname: user.nickname,
             message,
             userId,
             roomId

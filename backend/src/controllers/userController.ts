@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { User } from '../models/user';
 
 export const registerUser = async (req: Request, res: Response) => {
-  const { email, name, auth0Id, nickname } = req.body;
+  const { email, auth0Id } = req.body;
 
   try {
     let user = await User.findOne({ auth0Id });
@@ -10,9 +10,8 @@ export const registerUser = async (req: Request, res: Response) => {
     if (!user) {
       user = new User({
         email,
-        name,
         auth0Id,
-        nickname: nickname || 'Anonymous',
+        nickname: 'Anonymous',
       });
       await user.save();
     }

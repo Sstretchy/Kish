@@ -12,15 +12,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateNickname = exports.registerUser = void 0;
 const user_1 = require("../models/user");
 const registerUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, name, auth0Id, nickname } = req.body;
+    const { email, auth0Id } = req.body;
     try {
         let user = yield user_1.User.findOne({ auth0Id });
         if (!user) {
             user = new user_1.User({
                 email,
-                name,
                 auth0Id,
-                nickname: nickname || 'Anonymous',
+                nickname: 'Anonymous',
             });
             yield user.save();
         }

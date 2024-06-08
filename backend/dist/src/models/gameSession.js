@@ -25,16 +25,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameSession = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
-const TokenSchema = new mongoose_1.Schema({
-    x: { type: Number, required: true },
-    y: { type: Number, required: true },
-    userId: { type: mongoose_1.default.Types.ObjectId, required: true },
-    color: { type: String, required: true },
-    nickName: { type: String, required: true },
-    location: { type: String, required: true },
-});
 const GameSessionSchema = new mongoose_1.Schema({
-    roomId: { type: mongoose_1.default.Types.ObjectId, required: true, unique: true },
-    tokens: { type: [TokenSchema], default: [] },
+    roomId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Room', required: true },
+    tokens: [
+        {
+            userId: {
+                type: mongoose_1.default.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+            color: String,
+            nickName: String,
+            location: String,
+        },
+    ],
 });
 exports.GameSession = mongoose_1.default.model('GameSession', GameSessionSchema);

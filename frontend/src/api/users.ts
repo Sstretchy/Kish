@@ -2,7 +2,6 @@ import { sendRequest } from './requestService';
 
 type TUserRequestData = {
   email: string;
-  name: string;
   auth0Id: string;
 };
 
@@ -37,7 +36,7 @@ export const udpateNickName = async (
 ): Promise<string> => {
   const user = await sendRequest<TUpdateNickResponse>({
     url: `/users/nickname`,
-    method: 'POST',
+    method: 'PUT',
     data,
   });
 

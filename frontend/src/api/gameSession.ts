@@ -1,8 +1,6 @@
 import { sendRequest } from './requestService';
 
 export type TToken = {
-  x: number;
-  y: number;
   userId: string;
   color: string;
   nickName: string;

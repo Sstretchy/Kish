@@ -15,7 +15,8 @@
       "assets/*": ["../src/assets/*"],
       "styles/*": ["../src/styles/*"],
       "utils/*": ["../src/utils/*"],
-      "api/*": ["../src/api/*"]
+      "api/*": ["../src/api/*"],
+      "const/*": ["../src/const/*"]
     },
     "rootDir": "../src"
   },

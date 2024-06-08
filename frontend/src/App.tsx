@@ -7,6 +7,8 @@ import { io } from 'socket.io-client';
 import { getInitialsIds, setInitialsIds } from 'utils/localStorage';
 import { useAuth0 } from '@auth0/auth0-react';
 import { TUserResponse, getUser } from 'api/users';
+import { ActionsBar } from 'components/actions-bar/ActionsBar';
+import { TopPanel } from 'components/top-panel/TopPanel';
 
 const socket = io(process.env.API_URL);
 
@@ -14,6 +16,7 @@ export const App = () => {
   const [readyToPlay, setReadyToPlay] = useState(false);
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [isChatExpanded, setIsChatExpanded] = useState(true);
   const [nickName, setNickName] = useState('');
 
   const { isAuthenticated, user } = useAuth0();
@@ -23,7 +26,6 @@ export const App = () => {
       if (isAuthenticated && user) {
         const { userId, nickName }: TUserResponse = await getUser({
           email: user.email,
-          name: user.name,
           auth0Id: user.sub,
         });
 
@@ -62,20 +64,30 @@ export const App = () => {
 
   return (
     <div className={styles.App}>
-      <div className={styles.App__mainContent} />
-      <Map
-        currentUserId={currentUserId!}
-        nickName={nickName}
-        socket={socket}
-        currentRoomId={currentRoomId}
-      />
-      <ChatComponent
-        socket={socket}
-        currentRoomId={currentRoomId}
-        currentUserId={currentUserId}
-        setNickName={setNickName}
-        nickName={nickName}
-      />
+      <div className={styles.App__topContainer}>
+        <TopPanel />
+        <Map
+          currentUserId={currentUserId!}
+          nickName={nickName}
+          socket={socket}
+          currentRoomId={currentRoomId}
+        />
+      </div>
+      <div className={styles.App__rightContainer}>
+        <ActionsBar
+          isChatExpanded={isChatExpanded}
+          setIsChatExpanded={setIsChatExpanded}
+        />
+        <ChatComponent
+          socket={socket}
+          currentRoomId={currentRoomId}
+          currentUserId={currentUserId}
+          setNickName={setNickName}
+          nickName={nickName}
+          isChatExpanded={isChatExpanded}
+          setIsChatExpanded={setIsChatExpanded}
+        />
+      </div>
     </div>
   );
 };

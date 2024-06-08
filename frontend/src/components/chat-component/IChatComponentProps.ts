@@ -6,4 +6,6 @@ export interface IChatComponentProps {
   currentUserId: string;
   setNickName: React.Dispatch<React.SetStateAction<string>>;
   nickName: string;
+  setIsChatExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  isChatExpanded: boolean;
 }

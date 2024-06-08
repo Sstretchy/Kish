@@ -12,20 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRoom = void 0;
+exports.handleChatMessage = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const room_1 = require("../models/room");
-const createRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.body;
-    try {
-        const newRoom = new room_1.Room({
-            players: [new mongoose_1.default.Types.ObjectId(userId)]
+const user_1 = require("../../models/user");
+const message_1 = require("../../models/message");
+const handleChatMessage = (socket, data) => __awaiter(void 0, void 0, void 0, function* () {
+    const { roomId, userId, message } = data;
+    const user = yield user_1.User.findById(userId);
+    if (user) {
+        const newMessage = new message_1.Message({
+            username: user.nickname,
+            message,
+            userId: new mongoose_1.default.Types.ObjectId(userId),
+            roomId: new mongoose_1.default.Types.ObjectId(roomId),
         });
-        yield newRoom.save();
-        res.status(200).json({ success: true, roomId: newRoom._id });
-    }
-    catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        yield newMessage.save();
+        console.log(roomId, 'check');
+        console.log('Sending message to room:', roomId, newMessage);
+        socket.to(roomId).emit('chat message', newMessage);
     }
 });
-exports.createRoom = createRoom;
+exports.handleChatMessage = handleChatMessage;

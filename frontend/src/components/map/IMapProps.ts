@@ -1,1 +1,6 @@
-export interface IMapProps {}
+export interface IMapProps {
+  currentUserId: string;
+  nickName: string;
+  socket: any;
+  currentRoomId: string;
+}

@@ -2,16 +2,12 @@
 
 .ChatComponent {
   display: flex;
-  width: 300px; /* Или любая другая ширина */
-  background-color: @primary-main; /* Цвет фона сайдбара */
+  width: 300px;
+  background-color: #384d37;
   padding: 15px;
   box-sizing: border-box;
-  justify-content: end;
+  height: 100%;
   flex-direction: column;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  z-index: 1;
 
   &_collapsed {
     display: none;
@@ -44,15 +40,5 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-}
-
-.OpenChatIcon {
-  position: absolute;
-  right: 15px;
-  top: 15px;
-
-  &_hide {
-    display: none;
   }
 }

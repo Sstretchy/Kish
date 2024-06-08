@@ -23,7 +23,7 @@ export const createMessage = async (req: Request, res: Response) => {
     }
 
     const newMessage = new Message({
-      username: user.nickname,
+      nickname: user.nickname,
       message,
       userId,
       roomId

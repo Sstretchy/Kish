@@ -26,9 +26,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Message = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const MessageSchema = new mongoose_1.Schema({
-    username: { type: String, required: true },
+    nickname: { type: String, required: true },
     message: { type: String, required: true },
-    userId: { type: mongoose_1.default.Types.ObjectId, ref: 'User', required: true },
-    roomId: { type: String, required: true }
+    userId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User', required: true },
+    roomId: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'Room', required: true }
 });
 exports.Message = mongoose_1.default.model('Message', MessageSchema);

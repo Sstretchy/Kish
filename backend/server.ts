@@ -2,11 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import { createServer } from 'http';
-import { initSocket } from './src/services/socketService';
 import userRoutes from './src/routes/userRoutes';
 import messageRoutes from './src/routes/messageRoutes';
 import roomRoutes from './src/routes/roomRoutes';
 import gameSessionRoutes from './src/routes/gameSessionRoutes';
+import { initSocket } from './src/services/socket/socket';
 
 const app = express();
 const PORT = process.env.PORT || 3001;

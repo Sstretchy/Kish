@@ -44,7 +44,9 @@ const initSocket = (server) => {
                 socket.to(roomId).emit('user joined', { userId });
             }
             // Load existing tokens and send to the user
-            const gameSession = yield gameSession_1.GameSession.findOne({ roomId: new mongoose_1.default.Types.ObjectId(roomId) });
+            const gameSession = yield gameSession_1.GameSession.findOne({
+                roomId: new mongoose_1.default.Types.ObjectId(roomId),
+            });
             if (gameSession) {
                 socket.emit('load tokens', gameSession.tokens);
             }
@@ -66,10 +68,15 @@ const initSocket = (server) => {
         }));
         // Обработка токенов
         socket.on('place token', ({ roomId, token }) => __awaiter(void 0, void 0, void 0, function* () {
-            const gameSession = yield gameSession_1.GameSession.findOne({ roomId: new mongoose_1.default.Types.ObjectId(roomId) });
+            const gameSession = yield gameSession_1.GameSession.findOne({
+                roomId: new mongoose_1.default.Types.ObjectId(roomId),
+            });
             const tokenObjectId = new mongoose_1.default.Types.ObjectId(token.userId);
             if (gameSession) {
-                const updatedTokens = [...gameSession.tokens.filter(t => !t.userId.equals(tokenObjectId)), Object.assign(Object.assign({}, token), { userId: tokenObjectId })];
+                const updatedTokens = [
+                    ...gameSession.tokens.filter((t) => !t.userId.equals(tokenObjectId)),
+                    Object.assign(Object.assign({}, token), { userId: tokenObjectId }),
+                ];
                 gameSession.tokens = updatedTokens;
                 io.to(roomId).emit('update tokens', updatedTokens);
                 yield gameSession.save();

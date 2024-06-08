@@ -26,8 +26,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Room = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const RoomSchema = new mongoose_1.Schema({
-    roomId: { type: String, required: true, unique: true },
-    players: [{ type: mongoose_1.default.Types.ObjectId, ref: 'User' }],
-    gameSession: { type: mongoose_1.default.Schema.Types.ObjectId, ref: 'GameSession' },
+    players: [{ type: mongoose_1.default.Schema.Types.ObjectId, ref: 'User' }],
 });
 exports.Room = mongoose_1.default.model('Room', RoomSchema);

@@ -1,15 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IRoom extends Document {
+  players: mongoose.Types.ObjectId[];
+}
+
 const RoomSchema: Schema = new Schema({
-  roomId: { type: String, required: true, unique: true },
-  players: [{ type: mongoose.Types.ObjectId, ref: 'User' }],
-  gameSession: { type: mongoose.Schema.Types.ObjectId, ref: 'GameSession' },
+  players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
-export interface IRoom extends Document {
-  roomId: string;
-  players: mongoose.Types.ObjectId[];
-  gameSession: mongoose.Types.ObjectId;
-}
 
 export const Room = mongoose.model<IRoom>('Room', RoomSchema);

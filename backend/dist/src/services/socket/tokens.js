@@ -12,20 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createRoom = void 0;
+exports.handlePlaceToken = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
-const room_1 = require("../models/room");
-const createRoom = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userId } = req.body;
-    try {
-        const newRoom = new room_1.Room({
-            players: [new mongoose_1.default.Types.ObjectId(userId)]
-        });
-        yield newRoom.save();
-        res.status(200).json({ success: true, roomId: newRoom._id });
-    }
-    catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+const gameSession_1 = require("../../models/gameSession");
+const handlePlaceToken = (socket, io, data) => __awaiter(void 0, void 0, void 0, function* () {
+    const { roomId, token } = data;
+    const gameSession = yield gameSession_1.GameSession.findOne({
+        roomId: new mongoose_1.default.Types.ObjectId(roomId),
+    });
+    const tokenUserObjectId = new mongoose_1.default.Types.ObjectId(token.userId);
+    if (gameSession) {
+        const updatedTokens = [
+            ...gameSession.tokens.filter((t) => !t.userId.equals(tokenUserObjectId)),
+            Object.assign(Object.assign({}, token), { userId: tokenUserObjectId }),
+        ];
+        gameSession.tokens = updatedTokens;
+        yield gameSession.save();
+        io.to(roomId).emit('update tokens', updatedTokens);
+        socket.emit('load tokens', gameSession.tokens);
     }
 });
-exports.createRoom = createRoom;
+exports.handlePlaceToken = handlePlaceToken;
