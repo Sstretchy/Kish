@@ -26,7 +26,7 @@ export const ChatComponent = ({
   nickName,
   setNickName,
   setIsChatExpanded,
-  isChatExpanded
+  isChatExpanded,
 }: IChatComponentProps) => {
   const [snakbarOpened, setSnakbarOpened] = useState(false);
   const { isAuthenticated } = useAuth0();
@@ -68,14 +68,17 @@ export const ChatComponent = ({
 
   const sendNickName = async (event: FormEvent) => {
     event.preventDefault();
-    const nickName = await udpateNickName({
-      userId: currentUserId,
-      nickName: name,
-    });
 
-    setNickName(nickName);
-    setName('');
-    localStorage.setItem('nickName', nickName);
+    if (name) {
+      const nickName = await udpateNickName({
+        userId: currentUserId,
+        nickName: name,
+      });
+
+      setNickName(nickName);
+      setName('');
+      localStorage.setItem('nickName', nickName);
+    }
   };
 
   const sendMessage = (event: FormEvent) => {

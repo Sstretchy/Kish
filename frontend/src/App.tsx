@@ -9,6 +9,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import { TUserResponse, getUser } from 'api/users';
 import { ActionsBar } from 'components/actions-bar/ActionsBar';
 import { TopPanel } from 'components/top-panel/TopPanel';
+import { Table } from 'components/table/Table';
 
 const socket = io(process.env.API_URL);
 
@@ -16,7 +17,7 @@ export const App = () => {
   const [readyToPlay, setReadyToPlay] = useState(false);
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [isChatExpanded, setIsChatExpanded] = useState(true);
+  const [isChatExpanded, setIsChatExpanded] = useState(false);
   const [nickName, setNickName] = useState('');
 
   const { isAuthenticated, user } = useAuth0();
@@ -66,12 +67,14 @@ export const App = () => {
     <div className={styles.App}>
       <div className={styles.App__topContainer}>
         <TopPanel />
-        <Map
-          currentUserId={currentUserId!}
-          nickName={nickName}
-          socket={socket}
-          currentRoomId={currentRoomId}
-        />
+        <Table>
+          <Map
+            currentUserId={currentUserId!}
+            nickName={nickName}
+            socket={socket}
+            currentRoomId={currentRoomId}
+          />
+        </Table>
       </div>
       <div className={styles.App__rightContainer}>
         <ActionsBar
